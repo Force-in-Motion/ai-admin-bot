@@ -5,3 +5,9 @@ venv/
 .idea/
 __pycache__/
 *.deb
+keys/
+certs/
+*.pem
+*.pub
+.env
+.git

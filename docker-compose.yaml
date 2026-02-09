@@ -1,0 +1,99 @@
+version: '3.8'
+
+services:
+  # --- DATABASE (PostgreSQL) ---
+  db:
+    image: postgres:15-alpine
+    container_name: admin_bot_db
+    restart: always
+    environment:
+      # Эти переменные нужны только здесь, чтобы Postgres создал базу при старте
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "${DB_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # --- CACHE & RESULTS (Redis) ---
+  redis:
+    image: redis:7-alpine
+    container_name: admin_bot_redis
+    restart: always
+    ports:
+      - "${REDIS_PORT}:6379"
+
+  # --- BROKER (RabbitMQ) ---
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: admin_bot_rmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RMQ_PASS}
+    ports:
+      - "${RMQ_PORT}:5672"
+      - "15672:15672" # Панель управления
+
+  # --- MAIN APP (FastAPI) ---
+  app:
+    build: .
+    container_name: admin_bot_app
+    restart: always
+    volumes:
+      - .:/app
+      - ./certs:/app/certs:ro # Ключи только для чтения
+    environment:
+      - DB_URL=${DB_URL}
+
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+      - CELERY_BROKER=${CELERY_BROKER}
+      - CELERY_CACHE_BASE=${CELERY_CACHE_BASE}
+      - CELERY_BACKEND_BASE=${CELERY_BACKEND_BASE}
+
+      - RMQ_USER=${RMQ_USER}
+      - RMQ_PASS=${RMQ_PASS}
+      - RMQ_HOST=rabbitmq
+      - RMQ_PORT=5672
+
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+      - rabbitmq
+
+  # --- CELERY WORKER ---
+  worker:
+    build: .
+    container_name: admin_bot_worker
+    restart: always
+    command: celery -A app.core.celery_app worker --loglevel=info
+    volumes:
+      - .:/app
+      - ./certs:/app/certs:ro
+    environment:
+      - DB_URL=${DB_URL}
+
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      
+      - CELERY_BROKER=${CELERY_BROKER}
+      - CELERY_CACHE_BASE=${CELERY_CACHE_BASE}
+      - CELERY_BACKEND_BASE=${CELERY_BACKEND_BASE}
+      
+      - RMQ_USER=${RMQ_USER}
+      - RMQ_PASS=${RMQ_PASS}
+      - RMQ_HOST=rabbitmq
+      - RMQ_PORT=5672
+    depends_on:
+      - db
+      - redis
+      - rabbitmq
+
+volumes:
+  postgres_data:
