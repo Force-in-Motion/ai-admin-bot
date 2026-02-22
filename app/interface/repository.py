@@ -4,11 +4,11 @@ from abc import abstractmethod, ABC
 class ARepo(ABC):
 
     @abstractmethod
-    async def get_all_models(*args, **kwargs):
+    async def get_all(*args, **kwargs):
         pass
 
     @abstractmethod
-    async def get_model(*args, **kwargs):
+    async def get_one(*args, **kwargs):
         pass
 
     @abstractmethod
