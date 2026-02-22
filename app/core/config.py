@@ -20,4 +20,4 @@ class DBSettings(BaseSettings):
         env_prefix="DB_",
     )
 
-
+db_settings = DBSettings()
