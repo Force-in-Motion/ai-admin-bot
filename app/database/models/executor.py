@@ -2,7 +2,8 @@ from typing import TYPE_CHECKING, List
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Boolean, Integer, JSON, Text
 
-from app.database.models import Base, TimestampMixin, UserDataMixin
+from app.database.models import Base
+from app.database.models.mixin import UserDataMixin, TimestampMixin
 
 
 if TYPE_CHECKING:

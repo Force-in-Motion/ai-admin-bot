@@ -2,8 +2,8 @@ from typing import List, TYPE_CHECKING
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.database.models import Base, TimestampMixin, UserDataMixin
-
+from app.database.models import Base
+from app.database.models.mixin import UserDataMixin, TimestampMixin
 
 if TYPE_CHECKING:
     from app.database.models import Appointment
