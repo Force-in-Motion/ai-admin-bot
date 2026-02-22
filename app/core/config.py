@@ -26,20 +26,20 @@ class DBSettings(BaseSettings):
 
 class CacheSettings(BaseSettings):
 
+    url: str
+    
     host: str
 
     port: int
 
-    cache_url: str
-
     model_config = ConfigDict(
         env_file=".env",
         extra="ignore",
-        env_prefix="REDIS_",
+        env_prefix="CACHE_",
     )
 
 
-class CelerySettings(BaseSettings):
+class TaskSettings(BaseSettings):
 
     broker_url: str
 
@@ -55,20 +55,20 @@ class CelerySettings(BaseSettings):
 
     accept_content: str
 
-    task_serializer: str
+    serializer: str
 
     result_serializer: str
 
-    task_create_missing_queues: bool
+    create_missing_queues: bool
 
     model_config = ConfigDict(
         env_file=".env",
         extra="ignore",
-        env_prefix="CELERY_",
+        env_prefix="TASK_",
     )
 
 
-class RMQSetting(BaseSettings):
+class BrokerSettings(BaseSettings):
 
     host: str
 
@@ -81,7 +81,7 @@ class RMQSetting(BaseSettings):
     model_config = ConfigDict(
         env_file=".env",
         extra="ignore",
-        env_prefix="RMQ_",
+        env_prefix="BROKER_",
     )
 
 
@@ -124,11 +124,16 @@ class AISetting(BaseSettings):
 
 
 ai_settings = AISetting()
+
 db_settings = DBSettings()
-rmq_settings = RMQSetting()
+
 jwt_settings = JWTSettings()
+
+task_settings = TaskSettings()
+
 cahe_settings = CacheSettings()
-celery_settings = CelerySettings()
+
+broker_settings = BrokerSettings()
 
 
 
