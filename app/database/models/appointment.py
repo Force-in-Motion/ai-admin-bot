@@ -15,9 +15,10 @@ class Appointment(Base):
 
     __tablename__ = "appointments"
 
-    # Мастер + Время должны быть уникальны
+    # Мастер + Время должны быть уникальны, клиентт + время должны быть уникальны
     __table_args__ = (
-        UniqueConstraint("executor_id", "start_time", name="appointment_uniq"),
+        UniqueConstraint("executor_id", "start_time", name="executor_appointment_uniq"),
+        UniqueConstraint("client.id", "start_time", name="client_appointment_uniq"),
     )
 
     client_id: Mapped[int] = mapped_column(
