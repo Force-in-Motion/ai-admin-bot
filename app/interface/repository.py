@@ -26,3 +26,7 @@ class ARepo(ABC):
     @abstractmethod
     async def delete_all(*args, **kwargs):
         pass
+
+    @abstractmethod
+    async def clear(*args, **kwargs):
+        pass
